@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html manifest="" lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>LearningEnglish</title>
+
+    <!-- The line below must be kept intact for Sencha Command to build your application -->
+    <script id="microloader" type="text/javascript" src="sdk/microloader/development.js"></script>
+    <!-- <script type="text/javascript" src="phonegap.js"></script> -->
+
+    <script type="text/javascript" src="resources/js/jquery.js"></script>
+
+    <script type="text/javascript" src="resources/js/forcetk.js"></script>
+    <script type="text/javascript" src="resources/js/forcetk.ui.js"></script>
+
+    <script type="text/javascript">
+
+
+            // Call onDeviceReady when PhoneGap is loaded.
+            //
+            // At this point, the document has loaded but phonegap-1.0.0.js has not.
+            // When PhoneGap is loaded and talking with the native device,
+            // it will call the event `deviceready`.
+            // 
+            document.addEventListener("deviceready", onDeviceReady, false);
+
+            function onDeviceReady() {
+
+                console.log("deviceready");
+
+                
+            }
+
+            function login() {
+
+                    console.log("login called");
+                    // Salesforce login URL
+                    var loginURL = 'https://login.salesforce.com/',
+
+                    // Consumer Key from Setup | Develop | Remote Access
+                    consumerKey = '3MVG9rFJvQRVOvk7iv8t.9fmXUJpANbmAW2uvnRBffz0Xn41bfe5HGnYRoSaiiJl0CjWBWKkV6.W4iyQzGg69',
+
+                    // Callback URL from Setup | Develop | Remote Access
+                    callbackURL = 'https://login.salesforce.com/services/oauth2/success',
+
+                    // proxy = "http://localhost/LearningEnglish/resources/proxy/proxy.php?mode=native",
+
+                    // Instantiating forcetk ClientUI
+                    ftkClientUI = new forcetk.ClientUI(loginURL, consumerKey, callbackURL, 
+                        function forceOAuthUI_successHandler(forcetkClient) { // successCallback
+                            alert('OAuth success!');
+                            console.log('forcetkClient', forcetkClient);
+                        },
+                        function forceOAuthUI_errorHandler(error) { // errorCallback
+                            alert('OAuth error!');
+                            console.log('error', error);
+                        }
+                    );
+
+                    // Initiating login process
+                    ftkClientUI.login();
+                }
+
+    </script>
+
+</head>
+<body>
+
+<button id="btnLogin" onclick="login()">Login</button>
+
+</body>
+</html>

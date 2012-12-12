@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns		= "http://www.w3.org/ns/widgets"
+		xmlns:gap	= "http://phonegap.com/ns/1.0"
+		id			= "com.makepositive.mobile.LearningEnglish"
+		version 	= "0.0.1">
+
+	<name>Learning English</name>
+
+	<description>
+		Learning English
+	</description>
+
+	<author href="http://www.makepositive.com" email="manuel.olvera@makepositive.com">
+		MANUEL OLVERA @ Makepositive
+	</author>
+
+	<gap:plugin name="ChildBrowser" /> <!-- latest release -->
+	<access origin="*" />
+
+</widget>
