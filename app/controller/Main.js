@@ -21,7 +21,8 @@ Ext.define('LearningEnglish.controller.Main', {
 		refs: {
 
 			salesforceSingInButton : '#login_sing_in',
-            getWordsButton : '#main_get_words',
+            getAllWordsButton : '#main_get_words',
+            mainPanel : 'main_panel'
 			// tabpanel buttons - for history support as well
 			// homeTabBarButton    : 'tabbar button[title=Home]',
 
@@ -36,10 +37,10 @@ Ext.define('LearningEnglish.controller.Main', {
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
-            getWordsButton : {
+            getAllWordsButton : {
                 tap: function() {
                     // '_authenticate'
-                    this._authenticate('getWords', function(){console.log('errorCallback')});
+                    this._authenticate('getAllWords', function(){console.log('errorCallback')});
                 }
             }
 		},
@@ -80,18 +81,25 @@ Ext.define('LearningEnglish.controller.Main', {
 
 	},
 
-    getWords: function() {
+    getAllWords: function() {
 
-        console.log('getWords starts');
-            console.log('LearningEnglish[\'sfdcClient)\']', LearningEnglish['sfdcClient)']);
+        console.log('getAllWords starts');
 
-        LearningEnglish['sfdcClient'].query("SELECT English__c, Spanish__c FROM Word__c",
+        var formValues = LearningEnglish.app.getController('Main').getMainPanel().getValues();
+        var date = formValues['main_date'];
+        var formatDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+        console.log(formatDate);
+        var query = 'SELECT Id, English__c, Spanish__c FROM Word__c LIMIT 200';
+        console.log(query);
+        LearningEnglish['sfdcClient'].query(query,
             function(response){
-                console.log('getWords Callback');
+                console.log('getAllWords Callback');
                 console.log('response', response);
-                for(i = 0; i < response['records'].length; i++){
-                    console.log('Word '+ i +': '+response.records[i].English__c);
-                }
+                // for(i = 0; i < response['records'].length; i++){
+                //     console.log('Word '+ i +': '+response.records[i].English__c);
+                // }
+                var words_store = Ext.create('LearningEnglish.model.Word');
+                words_store.saveWords(response['records']);
             }
         );
 

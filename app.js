@@ -11,11 +11,14 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
-        'Ext.TitleBar'
+        'Ext.TitleBar',
+        'Ext.field.DatePicker'
     ],
 
     views: ['Main', 'Login'],
     controllers: ['Main'],
+    stores: ['Word'],
+    models: ['Word'],
 
     icon: {
         '57': 'resources/icons/Icon.png',
@@ -37,22 +40,22 @@ Ext.application({
 
     launch: function() {
 
-        alert("launch function");
+        // alert("launch function");
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
         var refreshToken = localStorage.getItem('ftkui_refresh_token');
 
 
-        alert("refreshToken passed");
+        // alert("refreshToken passed");
 
         if(refreshToken){
 
-        alert("Main to show");
+        // alert("Main to show");
             // Initialize the main view
             Ext.Viewport.add(Ext.create('LearningEnglish.view.Main'));
         } else {
-        alert("Login to show");
+        // alert("Login to show");
             // Initialize the main view
             Ext.Viewport.add(Ext.create('LearningEnglish.view.Login'));
         }

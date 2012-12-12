@@ -22,6 +22,15 @@ Ext.define("LearningEnglish.view.Main", {
                 ]
             },
             {
+                xtype: 'datepickerfield',
+                id: 'main_date',
+                name : 'main_date',
+                dateFormat:'n/j/Y',
+                picker: {
+                    slotOrder: ['day', 'month', 'year']
+                }
+            },
+            {
                 xtype: 'button',
                 name: 'get_account_name',
                 ui: 'action',
