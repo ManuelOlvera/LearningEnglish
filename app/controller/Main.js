@@ -21,7 +21,7 @@ Ext.define('LearningEnglish.controller.Main', {
 		refs: {
 
 			salesforceSingInButton : '#login_sing_in',
-            getAllWordsButton : '#main_get_words',
+            getLatestWordsButton : '#main_get_words',
             mainPanel : 'main_panel'
 			// tabpanel buttons - for history support as well
 			// homeTabBarButton    : 'tabbar button[title=Home]',
@@ -37,10 +37,10 @@ Ext.define('LearningEnglish.controller.Main', {
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
-            getAllWordsButton : {
+            getLatestWordsButton : {
                 tap: function() {
                     // '_authenticate'
-                    this._authenticate('getAllWords', function(){console.log('errorCallback')});
+                    this._authenticate('getLatestWords', function(){console.log('errorCallback')});
                 }
             }
 		},
@@ -81,26 +81,25 @@ Ext.define('LearningEnglish.controller.Main', {
 
 	},
 
-    getAllWords: function() {
+    getLatestWords: function() {
 
-        console.log('getAllWords starts');
+        console.log('getLatestWords starts');
 
         var formValues = LearningEnglish.app.getController('Main').getMainPanel().getValues();
         var date = formValues['main_date'];
-        var formatDate = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+        var formatDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + ' 00:00:00';
         console.log(formatDate);
-        var query = 'SELECT Id, English__c, Spanish__c FROM Word__c LIMIT 200';
-        console.log(query);
-        LearningEnglish['sfdcClient'].query(query,
-            function(response){
-                console.log('getAllWords Callback');
-                console.log('response', response);
-                // for(i = 0; i < response['records'].length; i++){
-                //     console.log('Word '+ i +': '+response.records[i].English__c);
-                // }
-                var words_store = Ext.create('LearningEnglish.model.Word');
-                words_store.saveWords(response['records']);
-            }
+
+        LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/getLatestWords?fromDate='+encodeURIComponent(formatDate), 
+        function(success){
+            console.log('getLatestWords Callback');
+            console.log('success', JSON.parse(success));
+            var words_store = Ext.create('LearningEnglish.model.Word');
+            words_store.saveWords(JSON.parse(success));
+        }, function(error){
+            console.log('getLatestWords Callback');
+            console.log('error', error);
+        }
         );
 
     },

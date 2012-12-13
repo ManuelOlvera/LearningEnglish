@@ -9,6 +9,8 @@ Ext.define('LearningEnglish.model.Word', {
 
 	saveWords: function(words_list){
 
+        console.log("save words",words_list);
+
         var words_store = Ext.getStore('Word');
 
         words_store.removeAll();
