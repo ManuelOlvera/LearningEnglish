@@ -21,8 +21,10 @@ Ext.define('LearningEnglish.controller.Main', {
 		refs: {
 
 			salesforceSingInButton : '#login_sing_in',
-            getLatestWordsButton : '#main_get_words',
-            mainPanel : 'main_panel'
+            getLatestWordsButton : '#main_getLatestWords',
+            mainPanel : 'main_panel',
+            gamePanel : 'game_panel',
+            backMain: '#backMain_button'
 			// tabpanel buttons - for history support as well
 			// homeTabBarButton    : 'tabbar button[title=Home]',
 
@@ -34,6 +36,9 @@ Ext.define('LearningEnglish.controller.Main', {
 			// 		this.redirectTo('home');
 			// 	}
 			// }
+            backMain : {
+                tap: 'showHome'
+            },
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
@@ -48,10 +53,29 @@ Ext.define('LearningEnglish.controller.Main', {
 		// history support
 		routes: {
 
-			// 'home'		 		: 'showHome'
+			'home'	: 'showHome',
+            'game'  : 'showGame'
 
 		}
 	},
+
+    showHome: function(){
+        var mainController = LearningEnglish.app.getController('Main');
+        console.log('mainController.getGamePanel()', mainController.getGamePanel());
+        if(mainController.getMainPanel() != null){
+            Ext.Viewport.animateActiveItem(mainController.getMainPanel(), {type:'pop'});
+        } else {
+            Ext.Viewport.animateActiveItem(Ext.create('LearningEnglish.view.Main'), {type:'pop'});
+        }
+    },
+    showGame: function(){
+        var mainController = LearningEnglish.app.getController('Main');
+        if(mainController.getGamePanel() != null){
+            Ext.Viewport.animateActiveItem(mainController.getGamePanel(), {type:'pop'});
+        } else {
+            Ext.Viewport.animateActiveItem(Ext.create('LearningEnglish.view.Game'), {type:'pop'});
+        }
+    },
 
 	salesforceSingIn: function() {
 
@@ -86,18 +110,26 @@ Ext.define('LearningEnglish.controller.Main', {
     getLatestWords: function() {
 
         console.log('getLatestWords starts');
+        var mainController = LearningEnglish.app.getController('Main');
 
         var formValues = LearningEnglish.app.getController('Main').getMainPanel().getValues();
         var date = formValues['main_date'];
-        var formatDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + ' 00:00:00';
+        var formatDate = null;
+        if(date != null){
+            formatDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + ' 00:00:00';
+        }
         console.log(formatDate);
 
         LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/getLatestWords?fromDate='+encodeURIComponent(formatDate),
         function(success){
             console.log('getLatestWords Callback');
-            console.log('success', JSON.parse(success));
             var words_store = Ext.create('LearningEnglish.model.Word');
             words_store.saveWords(JSON.parse(success));
+            // Initialize the game view
+            // Ext.Viewport.add(Ext.create('LearningEnglish.view.Game'));
+            // mainController.redirectTo('game');
+            mainController.redirectTo('game');
+            console.log('opening game view');
         }, function(error){
             console.log('getLatestWords Callback');
             console.log('error', error);

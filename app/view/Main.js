@@ -22,8 +22,6 @@ Ext.define("LearningEnglish.view.Main", {
                 ]
             },
             {
-<<<<<<< HEAD
-=======
                 xtype: 'datepickerfield',
                 id: 'main_date',
                 name : 'main_date',
@@ -33,12 +31,11 @@ Ext.define("LearningEnglish.view.Main", {
                 }
             },
             {
->>>>>>> cc49125b036e8e1af848216253114350b582953c
                 xtype: 'button',
-                name: 'get_account_name',
+                name: 'get_latestWords',
                 ui: 'action',
                 text: 'Get Words',
-                id: 'main_get_words'
+                id: 'main_getLatestWords'
             }
         ]
     }
