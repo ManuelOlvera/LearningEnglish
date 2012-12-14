@@ -21,7 +21,8 @@ Ext.define('LearningEnglish.controller.Main', {
 		refs: {
 
 			salesforceSingInButton : '#login_sing_in',
-            getWordsButton : '#main_get_words',
+            getLatestWordsButton : '#main_get_words',
+            mainPanel : 'main_panel'
 			// tabpanel buttons - for history support as well
 			// homeTabBarButton    : 'tabbar button[title=Home]',
 
@@ -36,10 +37,10 @@ Ext.define('LearningEnglish.controller.Main', {
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
-            getWordsButton : {
+            getLatestWordsButton : {
                 tap: function() {
                     // '_authenticate'
-                    this._authenticate('getWords', function(){console.log('errorCallback')});
+                    this._authenticate('getLatestWords', function(){console.log('errorCallback')});
                 }
             }
 		},
@@ -56,16 +57,6 @@ Ext.define('LearningEnglish.controller.Main', {
 
     var mainController = this;
     console.log("login called");
-    // Salesforce login URL
-    // var loginURL = 'https://login.salesforce.com/';
-
-    // Consumer Key from Setup | Develop | Remote Access
-    // consumerKey = '3MVG9rFJvQRVOvk7iv8t.9fmXUJpANbmAW2uvnRBffz0Xn41bfe5HGnYRoSaiiJl0CjWBWKkV6.W4iyQzGg69';
-
-    // Callback URL from Setup | Develop | Remote Access
-    // callbackURL = 'https://login.salesforce.com/services/oauth2/success';
-
-    // proxy = 'http://localhost/LearningEnglish/proxy/proxy.php?mode=native';
 
     // Instantiating forcetk ClientUI
     ftkClientUI = new forcetk.ClientUI(LearningEnglish['loginURL'], LearningEnglish['consumerKey'],
@@ -73,11 +64,13 @@ Ext.define('LearningEnglish.controller.Main', {
         function forceOAuthUI_successHandler(forcetkClient) { // successCallback
             console.log('OAuth success!');
             console.log('forcetkClient', forcetkClient);
+
+            LearningEnglish['sfdcClient)'] = ftkClientUI.client;
+            console.log('LearningEnglish[\'sfdcClient)\']', LearningEnglish['sfdcClient)']);
             // Initialize the main view
             Ext.Viewport.add(Ext.create('LearningEnglish.view.Main'));
             Ext.Viewport.setActiveItem(1);
 
-            mainController.getWords();
         },
         function forceOAuthUI_errorHandler(error) { // errorCallback
             console.log('error', error);
@@ -87,24 +80,28 @@ Ext.define('LearningEnglish.controller.Main', {
 
     // Initiating login process
     ftkClientUI.login();
-    console.log("sfdcClient", LearningEnglish['sfdcClient)']);
-    LearningEnglish['sfdcClient)'] = ftkClientUI.client;
-    console.log("sfdcClient", LearningEnglish['sfdcClient)']);
 
 	},
 
-    getWords: function() {
+    getLatestWords: function() {
 
-        console.log('getWords starts');
+        console.log('getLatestWords starts');
 
-        LearningEnglish['sfdcClient'].query("SELECT English__c, Spanish__c FROM Word__c",
-            function(response){
-                console.log('getWords Callback');
-                console.log('response', response);
-                for(i = 0; i < response['records'].length; i++){
-                    console.log('Word '+ i +': '+response.records[i].English__c);
-                }
-            }
+        var formValues = LearningEnglish.app.getController('Main').getMainPanel().getValues();
+        var date = formValues['main_date'];
+        var formatDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + ' 00:00:00';
+        console.log(formatDate);
+
+        LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/getLatestWords?fromDate='+encodeURIComponent(formatDate),
+        function(success){
+            console.log('getLatestWords Callback');
+            console.log('success', JSON.parse(success));
+            var words_store = Ext.create('LearningEnglish.model.Word');
+            words_store.saveWords(JSON.parse(success));
+        }, function(error){
+            console.log('getLatestWords Callback');
+            console.log('error', error);
+        }
         );
 
     },

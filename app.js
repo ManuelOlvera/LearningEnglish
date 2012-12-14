@@ -11,11 +11,21 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
+<<<<<<< HEAD
         'Ext.TitleBar'
+=======
+        'Ext.TitleBar',
+        'Ext.field.DatePicker'
+>>>>>>> cc49125b036e8e1af848216253114350b582953c
     ],
 
     views: ['Main', 'Login'],
     controllers: ['Main'],
+<<<<<<< HEAD
+=======
+    stores: ['Word'],
+    models: ['Word'],
+>>>>>>> cc49125b036e8e1af848216253114350b582953c
 
     icon: {
         '57': 'resources/icons/Icon.png',
@@ -37,13 +47,18 @@ Ext.application({
 
     launch: function() {
 
+<<<<<<< HEAD
         alert("launch function");
+=======
+        // alert("launch function");
+>>>>>>> cc49125b036e8e1af848216253114350b582953c
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
         var refreshToken = localStorage.getItem('ftkui_refresh_token');
 
 
+<<<<<<< HEAD
         alert("refreshToken passed");
 
         if(refreshToken){
@@ -53,6 +68,17 @@ Ext.application({
             Ext.Viewport.add(Ext.create('LearningEnglish.view.Main'));
         } else {
         alert("Login to show");
+=======
+        // alert("refreshToken passed");
+
+        if(refreshToken){
+
+        // alert("Main to show");
+            // Initialize the main view
+            Ext.Viewport.add(Ext.create('LearningEnglish.view.Main'));
+        } else {
+        // alert("Login to show");
+>>>>>>> cc49125b036e8e1af848216253114350b582953c
             // Initialize the main view
             Ext.Viewport.add(Ext.create('LearningEnglish.view.Login'));
         }
