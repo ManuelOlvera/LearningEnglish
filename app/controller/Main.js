@@ -26,21 +26,33 @@ Ext.define('LearningEnglish.controller.Main', {
             gamePanel : 'game_panel',
             backMain: '#backMain_button',
             newGameButton: '#main_newGame',
-            continueOldGameButton: '#main_continueOldGame'
+            continueOldGameButton: '#main_continueOldGame',
+            checkWordButton:'#game_checkAnswer',
+            rightAnswerdButton:'#game_rightAnswer',
+            wrongAnswerButton:'#game_wrongAnswer',
+            rightAnswerLabel: '#game_rightAnswer_label',
+            wrongAnswerLabel: '#game_wrongAnswer_label'
 
 		},
 		control: {
 
             backMain : {
-                tap: function(){
-                    this.redirectTo('home');
-                }
+                tap: 'goBackHome'
             },
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
             newGameButton : {
                 tap: 'startNewGame'
+            },
+            checkWordButton : {
+                tap: 'checkAnswer'
+            },
+            rightAnswerdButton : {
+                tap: 'rightAnswer'
+            },
+            wrongAnswerButton : {
+                tap: 'wrongAnswer'
             },
             continueOldGameButton : {
                 tap: 'continueOldGame'
@@ -65,6 +77,7 @@ Ext.define('LearningEnglish.controller.Main', {
             Ext.Viewport.animateActiveItem(Ext.create('LearningEnglish.view.Main'), {type:'pop'});
         }
     },
+
     showGame: function(){
         var mainController = LearningEnglish.app.getController('Main');
         if(mainController.getGamePanel() != null){
@@ -72,6 +85,14 @@ Ext.define('LearningEnglish.controller.Main', {
         } else {
             Ext.Viewport.animateActiveItem(Ext.create('LearningEnglish.view.Game'), {type:'pop'});
         }
+    },
+
+    goBackHome: function(){
+        var words_store = Ext.getStore('Word');
+        words_store.sync();
+        localStorage.setItem('rightCount', currentGame['rightCount']);
+        localStorage.setItem('wrongCount', currentGame['wrongCount']);
+        this.redirectTo('home');
     },
 
 	salesforceSingIn: function() {
@@ -116,11 +137,55 @@ Ext.define('LearningEnglish.controller.Main', {
         var words_store = Ext.getStore('Word');
         var mainController = LearningEnglish.app.getController('Main');
         if(words_store != null && words_store.data.all.length > 0){
+            currentGame['rightCount'] = localStorage.getItem('rightCount');
+            currentGame['wrongCount'] = localStorage.getItem('wrongCount');
             mainController.redirectTo('game');
+            mainController.getWord();mainController.getRightAnswerLabel().setHtml("Right Answers: "+currentGame['rightCount']);
+            mainController.getWord();mainController.getWrongAnswerLabel().setHtml("Right Answers: "+currentGame['wrongCount']);
         } else {
             alert("No old game to continue");
         }
-        // console.log("words_store content", words_store.data.all[0].data['english']);
+    },
+
+    checkAnswer: function() {
+
+        var mainController = LearningEnglish.app.getController('Main');
+        var words_store = Ext.getStore('Word');
+        var formValues = mainController.getGamePanel();
+        if(currentGame['language'] === 'english'){
+            console.log("english word");
+            formValues.setValues({
+                game_answer : words_store.getAt(currentGame['wordPosition']).data['spanish']
+            });
+        } else {
+            console.log("spanish word");
+            formValues.setValues({
+                game_answer : words_store.getAt(currentGame['wordPosition']).data['english']
+            });            
+        }
+
+    },
+
+    rightAnswer: function() {
+
+        var words_store = Ext.getStore('Word');
+        var mainController = LearningEnglish.app.getController('Main');
+
+        if(currentGame['wordPosition'] != null){
+            words_store.removeAt(currentGame['wordPosition']);
+        }
+        currentGame['rightCount'] = parseInt(currentGame['rightCount']) + 1;
+        mainController.getRightAnswerLabel().setHtml("Right Answers: "+currentGame['rightCount']);
+        mainController.getWord();
+    },
+
+    wrongAnswer: function() {
+
+        var mainController = LearningEnglish.app.getController('Main');
+
+        currentGame['wrongCount'] = parseInt(currentGame['wrongCount']) + 1;        
+        mainController.getWrongAnswerLabel().setHtml("Wrong Answers: "+currentGame['wrongCount']);
+        mainController.getWord();
     },
 
     getLatestWords: function() {
@@ -128,7 +193,7 @@ Ext.define('LearningEnglish.controller.Main', {
         console.log('getLatestWords starts');
         var mainController = LearningEnglish.app.getController('Main');
 
-        var formValues = LearningEnglish.app.getController('Main').getMainPanel().getValues();
+        var formValues = mainController.getMainPanel().getValues();
         var date = formValues['main_date'];
         var formatDate = null;
         if(date != null){
@@ -140,10 +205,7 @@ Ext.define('LearningEnglish.controller.Main', {
         function(success){
             console.log('getLatestWords Callback');
             var words_store = Ext.create('LearningEnglish.model.Word');
-            words_store.saveWords(JSON.parse(success));
-            // Initialize the game view
-            // Ext.Viewport.add(Ext.create('LearningEnglish.view.Game'));
-            // mainController.redirectTo('game');
+            words_store.saveWords(JSON.parse(success), true);
             mainController.redirectTo('game');
             console.log('opening game view');
         }, function(error){
@@ -151,6 +213,36 @@ Ext.define('LearningEnglish.controller.Main', {
             console.log('error', error);
         }
         );
+
+    },
+
+    getWord: function() {
+        var words_store = Ext.getStore('Word');
+        var storeLenght = words_store.data.all.length;
+        var storePosition = Math.round(Math.random()*storeLenght);
+        var formValues = LearningEnglish.app.getController('Main').getGamePanel();
+        currentGame['wordPosition'] = storePosition;
+
+        console.log('storeLenght', storeLenght);
+        console.log('storePosition', storePosition);
+
+        if(Math.random() > 0.5){
+            formValues['game_question'] = words_store.getAt(storePosition).data['english'];
+            currentGame['language'] = 'english';
+            formValues.setValues({
+                game_question : words_store.getAt(storePosition).data['english'],
+                game_answer : null
+            });
+            console.log(words_store.getAt(storePosition).data['english']);
+        } else {
+            formValues['game_question'] = words_store.getAt(storePosition).data['spanish'];
+            currentGame['language'] = 'spanish';            
+            formValues.setValues({
+                game_question : words_store.getAt(storePosition).data['spanish'],
+                game_answer : null
+            });
+            console.log(words_store.getAt(storePosition).data['spanish']);
+        }
 
     },
 

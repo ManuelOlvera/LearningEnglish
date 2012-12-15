@@ -47,7 +47,7 @@ Ext.define("LearningEnglish.view.Game", {
                 },
                 {
                     xtype: 'button',
-                    name: 'game_checkWord',
+                    name: 'game_checkAnswer',
                     ui: 'action',
                     text: 'Check Answer',
                     id: 'game_checkAnswer'
@@ -70,13 +70,13 @@ Ext.define("LearningEnglish.view.Game", {
                     xtype: 'label',
                     name: 'game_rightAnswer_label',
                     id :  'game_rightAnswer_label',
-                    html: 'RightAnswer: 0'
+                    html: 'Right Answers: 0'
                 },
                 {
                     xtype: 'label',
                     name: 'game_wrongAnswer_label',
                     id :  'game_wrongAnswer_label',
-                    html: 'WrongAnswer: 0'
+                    html: 'Wrong Answers: 0'
                 }
             ]
         }

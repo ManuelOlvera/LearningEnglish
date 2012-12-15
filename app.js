@@ -6,6 +6,12 @@ var LearningEnglish = {
     proxy : null, // Mobile
     sfdcClient : null
 
+};
+var currentGame = {
+    wordPosition : null,
+    rightCount : 0,
+    wrongCount : 0,
+    language : null
 }
 Ext.application({
     name: 'LearningEnglish',
