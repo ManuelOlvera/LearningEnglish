@@ -32,10 +32,17 @@ Ext.define("LearningEnglish.view.Main", {
             },
             {
                 xtype: 'button',
-                name: 'get_latestWords',
+                name: 'main_continueOldGame',
                 ui: 'action',
-                text: 'Get Words',
-                id: 'main_getLatestWords'
+                text: 'Continue Old Game',
+                id: 'main_continueOldGame'
+            },
+            {
+                xtype: 'button',
+                name: 'main_newGame',
+                ui: 'action',
+                text: 'New Game',
+                id: 'main_newGame'
             }
         ]
     }

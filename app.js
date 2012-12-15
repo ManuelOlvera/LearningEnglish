@@ -14,7 +14,8 @@ Ext.application({
         'Ext.TitleBar',
         'Ext.field.DatePicker',
         'Ext.data.proxy.LocalStorage',
-        'Ext.data.identifier.Uuid'
+        'Ext.data.identifier.Uuid',
+        'Ext.Label'
     ],
 
     views: ['Main', 'Login', 'Game'],

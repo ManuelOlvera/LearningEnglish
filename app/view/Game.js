@@ -28,15 +28,55 @@ Ext.define("LearningEnglish.view.Game", {
                     xtype: 'panel',
                     styleHtmlContent: true,
                     html: [
-                        '<h2>Playing...</h2>'
+                        '<h2>Playing</h2>'
                     ]
                 },
                 {
+                    xtype: 'textareafield',
+                    name: 'game_question',
+                    id :  'game_question',
+                    label: 'Question',
+                    maxRows: 4
+                },
+                {
+                    xtype: 'textareafield',
+                    name: 'game_answer',
+                    id :  'game_answer',
+                    label: 'Answer',
+                    maxRows: 4
+                },
+                {
                     xtype: 'button',
-                    name: 'get_next_word',
+                    name: 'game_checkWord',
                     ui: 'action',
-                    text: 'Get Words',
-                    id: 'main_getLatest_words'
+                    text: 'Check Answer',
+                    id: 'game_checkAnswer'
+                },
+                {
+                    xtype: 'button',
+                    name: 'game_rightAnswer',
+                    ui: 'confirm',
+                    text: 'Right Answer',
+                    id: 'game_rightAnswer'
+                },
+                {
+                    xtype: 'button',
+                    name: 'game_wrongAnswer',
+                    ui: 'decline',
+                    text: 'Wrong Answer',
+                    id: 'game_wrongAnswer'
+                },
+                {
+                    xtype: 'label',
+                    name: 'game_rightAnswer_label',
+                    id :  'game_rightAnswer_label',
+                    html: 'RightAnswer: 0'
+                },
+                {
+                    xtype: 'label',
+                    name: 'game_wrongAnswer_label',
+                    id :  'game_wrongAnswer_label',
+                    html: 'WrongAnswer: 0'
                 }
             ]
         }

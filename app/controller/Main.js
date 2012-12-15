@@ -24,29 +24,26 @@ Ext.define('LearningEnglish.controller.Main', {
             getLatestWordsButton : '#main_getLatestWords',
             mainPanel : 'main_panel',
             gamePanel : 'game_panel',
-            backMain: '#backMain_button'
-			// tabpanel buttons - for history support as well
-			// homeTabBarButton    : 'tabbar button[title=Home]',
+            backMain: '#backMain_button',
+            newGameButton: '#main_newGame',
+            continueOldGameButton: '#main_continueOldGame'
 
 		},
 		control: {
 
-			// homeTabBarButton    : {
-			// 	tap: function(){
-			// 		this.redirectTo('home');
-			// 	}
-			// }
             backMain : {
-                tap: 'showHome'
+                tap: function(){
+                    this.redirectTo('home');
+                }
             },
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
-            getLatestWordsButton : {
-                tap: function() {
-                    // '_authenticate'
-                    this._authenticate('getLatestWords', function(){console.log('errorCallback')});
-                }
+            newGameButton : {
+                tap: 'startNewGame'
+            },
+            continueOldGameButton : {
+                tap: 'continueOldGame'
             }
 		},
 
@@ -106,6 +103,25 @@ Ext.define('LearningEnglish.controller.Main', {
     ftkClientUI.login();
 
 	},
+
+    startNewGame: function () {
+        var mainController = LearningEnglish.app.getController('Main');
+        mainController._authenticate('getLatestWords', function(error){
+            alert("Error trying to create a new game.");
+        });
+    },
+
+    continueOldGame: function () {
+        
+        var words_store = Ext.getStore('Word');
+        var mainController = LearningEnglish.app.getController('Main');
+        if(words_store != null && words_store.data.all.length > 0){
+            mainController.redirectTo('game');
+        } else {
+            alert("No old game to continue");
+        }
+        // console.log("words_store content", words_store.data.all[0].data['english']);
+    },
 
     getLatestWords: function() {
 
