@@ -2,7 +2,8 @@ var LearningEnglish = {
     loginURL : 'https://login.salesforce.com/',
     consumerKey : '3MVG9rFJvQRVOvk7iv8t.9fmXUJpANbmAW2uvnRBffz0Xn41bfe5HGnYRoSaiiJl0CjWBWKkV6.W4iyQzGg69',
     callbackURL : 'https://login.salesforce.com/services/oauth2/success',
-    proxy : 'http://localhost/LearningEnglish/proxy/proxy.php?mode=native',
+    // proxy : 'http://localhost/LearningEnglish/proxy/proxy.php?mode=native', // Web
+    proxy : null, // Mobile
     sfdcClient : null
 
 }
@@ -46,7 +47,7 @@ Ext.application({
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
 
-        var refreshToken = localStorage.getItem('ftkui_refresh_token');
+        var refreshToken = localStorage.getItem('ftkui_refresh_token_learningEnglish');
 
         // alert("refreshToken passed");
 

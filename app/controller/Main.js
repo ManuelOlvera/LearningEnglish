@@ -157,7 +157,7 @@ Ext.define('LearningEnglish.controller.Main', {
     _authenticate: function(callback, errorCallback) {
 
         console.log('_authenticate starts');
-        var refreshToken = localStorage.getItem('ftkui_refresh_token');
+        var refreshToken = localStorage.getItem('ftkui_refresh_token_learningEnglish');
         var mainController = this;
 
         console.log('refreshToken',refreshToken);

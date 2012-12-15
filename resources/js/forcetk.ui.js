@@ -61,7 +61,7 @@
         // Creating forcetk.Client instance
         // this.client = new forcetk.Client(consumerKey, loginURL);
 
-        // to use with the web browser!!!!!
+        // When using a web browser I need a proxy, otherwise proxy must be null
         this.client = new forcetk.Client(consumerKey, loginURL, proxy);
 
     }
@@ -74,7 +74,7 @@
         login:function login() {
             console.log("login");
 
-            var refreshToken = localStorage.getItem('ftkui_refresh_token');
+            var refreshToken = localStorage.getItem('ftkui_refresh_token_learningEnglish');
 
 
             console.log("refreshToken", refreshToken);
@@ -124,7 +124,7 @@
                     });
                 }
 
-            localStorage.setItem('ftkui_refresh_token', null);
+            localStorage.setItem('ftkui_refresh_token_learningEnglish', null);
 
             $.ajax({
                 type:'POST',
@@ -225,7 +225,7 @@
 
             } else {
 
-                localStorage.setItem('ftkui_refresh_token', oauthResponse.refresh_token);
+                localStorage.setItem('ftkui_refresh_token_learningEnglish', oauthResponse.refresh_token);
 
                 this.client.setRefreshToken(oauthResponse.refresh_token);
                 this.client.setSessionToken(oauthResponse.access_token, null, oauthResponse.instance_url);
