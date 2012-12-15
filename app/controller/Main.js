@@ -5,8 +5,8 @@ Ext.define('LearningEnglish.controller.Main', {
 
 		document.addEventListener("backbutton",
 			function(){
-				if( Ext.Viewport.getActiveItem().getActiveItem().xtype === 'main_panel'
-                    ||  Ext.Viewport.getActiveItem().getActiveItem().xtype === 'login_panel' ){
+				if( Ext.Viewport.getActiveItem().xtype === 'main_panel'
+                    ||  Ext.Viewport.getActiveItem().xtype === 'login_panel' ){
 					// back on home page must quit the app
 					navigator.app.exitApp();
 				}else{
@@ -207,6 +207,7 @@ Ext.define('LearningEnglish.controller.Main', {
             var words_store = Ext.create('LearningEnglish.model.Word');
             words_store.saveWords(JSON.parse(success), true);
             mainController.redirectTo('game');
+            mainController.getWord();
             console.log('opening game view');
         }, function(error){
             console.log('getLatestWords Callback');
