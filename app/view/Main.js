@@ -22,15 +22,6 @@ Ext.define("LearningEnglish.view.Main", {
                 ]
             },
             {
-                xtype: 'datepickerfield',
-                id: 'main_date',
-                name : 'main_date',
-                dateFormat:'n/j/Y',
-                picker: {
-                    slotOrder: ['day', 'month', 'year']
-                }
-            },
-            {
                 xtype: 'button',
                 name: 'main_continueOldGame',
                 ui: 'action',
@@ -39,10 +30,24 @@ Ext.define("LearningEnglish.view.Main", {
             },
             {
                 xtype: 'button',
-                name: 'main_newGame',
+                name: 'main_random',
                 ui: 'action',
-                text: 'New Game',
-                id: 'main_newGame'
+                text: 'Get Random Words',
+                id: 'main_random'
+            },
+            {
+                xtype: 'button',
+                name: 'main_mostFailed',
+                ui: 'action',
+                text: 'Get Most Failed Words',
+                id: 'main_mostFailed'
+            },
+            {
+                xtype: 'button',
+                name: 'main_lessPlayed',
+                ui: 'action',
+                text: 'Get Less Played Words',
+                id: 'main_lessPlayed'
             }
         ]
     }

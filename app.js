@@ -2,8 +2,8 @@ var LearningEnglish = {
     loginURL : 'https://login.salesforce.com/',
     consumerKey : '3MVG9rFJvQRVOvk7iv8t.9fmXUJpANbmAW2uvnRBffz0Xn41bfe5HGnYRoSaiiJl0CjWBWKkV6.W4iyQzGg69',
     callbackURL : 'https://login.salesforce.com/services/oauth2/success',
-    // proxy : 'http://localhost/LearningEnglish/proxy/proxy.php?mode=native', // Web
-    proxy : null, // Mobile
+    proxy : 'http://localhost/LearningEnglish/proxy/proxy.php?mode=native', // Web
+    // proxy : null, // Mobile
     sfdcClient : null
 
 };
@@ -11,8 +11,9 @@ var currentGame = {
     wordPosition : null,
     rightCount : 0,
     wrongCount : 0,
-    language : null
-}
+    language : null,
+    errorWordsList : null
+};
 Ext.application({
     name: 'LearningEnglish',
 

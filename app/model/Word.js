@@ -3,7 +3,7 @@ Ext.define('LearningEnglish.model.Word', {
 
 	config: {
 		identifier: 'uuid',
-		fields: ['id','recordId', 'english', 'spanish']	// recordId is the salesforceRecordID
+		fields: ['id','recordId', 'english', 'spanish', 'mistakes']	// recordId is the salesforceRecordID
 	},
 
 
@@ -24,6 +24,7 @@ Ext.define('LearningEnglish.model.Word', {
                 recordId: words_list[i]['Id'],
                 english: words_list[i]['English__c'],
                 spanish: words_list[i]['Spanish__c'],
+                mistakes: words_list[i]['Mistakes__c']
 
             }
             words.push(word);

@@ -5,11 +5,14 @@ Ext.define('LearningEnglish.controller.Main', {
 
 		document.addEventListener("backbutton",
 			function(){
+                console.log("back button clicked with this Viewport active type: ", Ext.Viewport.getActiveItem().xtype);
 				if( Ext.Viewport.getActiveItem().xtype === 'main_panel'
                     ||  Ext.Viewport.getActiveItem().xtype === 'login_panel' ){
+                    console.log("back button clicked being in main panel or login panel");
 					// back on home page must quit the app
 					navigator.app.exitApp();
 				}else{
+                    console.log("back button clicked not exit!!!!");
 					history.back();
 				}
 			}
@@ -25,7 +28,10 @@ Ext.define('LearningEnglish.controller.Main', {
             mainPanel : 'main_panel',
             gamePanel : 'game_panel',
             backMain: '#backMain_button',
-            newGameButton: '#main_newGame',
+            // newGameButton: '#main_newGame',
+            lessPlayedButton: '#main_lessPlayed',
+            mostFailedButton: '#main_mostFailed',
+            randomButton: '#main_random',
             continueOldGameButton: '#main_continueOldGame',
             checkWordButton:'#game_checkAnswer',
             rightAnswerdButton:'#game_rightAnswer',
@@ -42,8 +48,23 @@ Ext.define('LearningEnglish.controller.Main', {
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
-            newGameButton : {
-                tap: 'startNewGame'
+            // newGameButton : {
+            //     tap: 'startNewGame'
+            // },
+            lessPlayedButton : {
+                tap : function() {
+                    this.startNewGame('lessPlayed');
+                }
+            },
+            mostFailedButton : {
+                tap : function() {
+                    this.startNewGame('mostFailed');
+                }
+            },
+            randomButton : {
+                tap : function() {
+                    this.startNewGame('random');
+                }
             },
             checkWordButton : {
                 tap: 'checkAnswer'
@@ -90,6 +111,27 @@ Ext.define('LearningEnglish.controller.Main', {
     goBackHome: function(){
         var words_store = Ext.getStore('Word');
         words_store.sync();
+        console.log('errorWordsList', currentGame['errorWordsList']);
+        if(currentGame['errorWordsList'] != null){
+            var errorWordsListJSON = new Array();
+            for(i = 0; i < currentGame['errorWordsList'].size; i++){
+                errorWordsListJSON[i] = {
+                    id : currentGame['errorWordsList'][0].data['id'],
+                    english : currentGame['errorWordsList'][0].data['english'],
+                    spanish : currentGame['errorWordsList'][0].data['spanish'],
+                    mistakes : currentGame['errorWordsList'][0].data['mistakes'],
+                }
+            }
+            var JSONobjet = {
+                errorList : errorWordsListJSON
+            };
+            console.log('JSONobjet', JSONobjet);
+            LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/saveErrorWords', function(success){
+                console.log("Everything went well. Error words saved succesfully", success);
+            }, function(error){
+                console.log("ERROR!!!!!! Saving error words", error);
+            }, 'POST', JSON.stringify(JSONobjet), null);
+        }
         localStorage.setItem('rightCount', currentGame['rightCount']);
         localStorage.setItem('wrongCount', currentGame['wrongCount']);
         this.redirectTo('home');
@@ -125,11 +167,11 @@ Ext.define('LearningEnglish.controller.Main', {
 
 	},
 
-    startNewGame: function () {
+    startNewGame: function (gameType) {
         var mainController = LearningEnglish.app.getController('Main');
         mainController._authenticate('getLatestWords', function(error){
             alert("Error trying to create a new game.");
-        });
+        }, gameType);
     },
 
     continueOldGame: function () {
@@ -182,31 +224,43 @@ Ext.define('LearningEnglish.controller.Main', {
     wrongAnswer: function() {
 
         var mainController = LearningEnglish.app.getController('Main');
+        var words_store = Ext.getStore('Word');
 
         currentGame['wrongCount'] = parseInt(currentGame['wrongCount']) + 1;        
         mainController.getWrongAnswerLabel().setHtml("Wrong Answers: "+currentGame['wrongCount']);
+        var actualWord = words_store.getAt(currentGame['wordPosition']);
+        if(actualWord['mistakes'] === null){
+            actualWord['mistakes'] = 1;
+        } else {
+            actualWord['mistakes'] = parseInt(actualWord['mistakes']) + 1;
+        }
+        if(currentGame['errorWordsList'] === null){
+            currentGame['errorWordsList'] = new Array();
+            currentGame['errorWordsList'][0] = words_store.getAt(currentGame['wordPosition']);
+        } else {
+            currentGame['errorWordsList'][currentGame['errorWordsList'].length] = words_store.getAt(currentGame['wordPosition']);
+        }     
+        words_store.sync();
         mainController.getWord();
     },
 
-    getLatestWords: function() {
+    getLatestWords: function(gameType) {
 
         console.log('getLatestWords starts');
+
+        console.log('getLatestWords gameType: '+gameType);
         var mainController = LearningEnglish.app.getController('Main');
 
-        var formValues = mainController.getMainPanel().getValues();
-        var date = formValues['main_date'];
-        var formatDate = null;
-        if(date != null){
-            formatDate = date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + ' 00:00:00';
-        }
-        console.log(formatDate);
-
-        LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/getLatestWords?fromDate='+encodeURIComponent(formatDate),
+        LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/getLatestWords?gameType='+gameType,
         function(success){
             console.log('getLatestWords Callback');
             var words_store = Ext.create('LearningEnglish.model.Word');
             words_store.saveWords(JSON.parse(success), true);
             mainController.redirectTo('game');
+            currentGame['wrongCount'] = 0;
+            currentGame['rightCount'] = 0;
+            mainController.getRightAnswerLabel().setHtml("Right Answers: 0");
+            mainController.getWrongAnswerLabel().setHtml("Wrong Answers: 0");
             mainController.getWord();
             console.log('opening game view');
         }, function(error){
@@ -247,7 +301,7 @@ Ext.define('LearningEnglish.controller.Main', {
 
     },
 
-    _authenticate: function(callback, errorCallback) {
+    _authenticate: function(callback, errorCallback, callbackParam) {
 
         console.log('_authenticate starts');
         var refreshToken = localStorage.getItem('ftkui_refresh_token_learningEnglish');
@@ -266,7 +320,8 @@ Ext.define('LearningEnglish.controller.Main', {
                 LearningEnglish['sfdcClient'].setSessionToken(sessionToken.access_token, null, sessionToken.instance_url);
                 console.log('INFO: OAuth login successful!')
                 console.log('callback', callback);
-                mainController[callback].call();
+                console.log('callbackParam', callbackParam);
+                mainController[callback].call(this, callbackParam);
             },
             function refreshAccessToken_errorHandler(jqXHR, textStatus, errorThrown) {
                 console.log('ERROR: OAuth login!')
