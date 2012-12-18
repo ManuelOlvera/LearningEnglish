@@ -3,21 +3,31 @@ Ext.define('LearningEnglish.controller.Main', {
 
 	init : function(){
 
-		document.addEventListener("backbutton",
-			function(){
-                console.log("back button clicked with this Viewport active type: ", Ext.Viewport.getActiveItem().xtype);
-				if( Ext.Viewport.getActiveItem().xtype === 'main_panel'
-                    ||  Ext.Viewport.getActiveItem().xtype === 'login_panel' ){
-                    console.log("back button clicked being in main panel or login panel");
-					// back on home page must quit the app
-					navigator.app.exitApp();
-				}else{
-                    console.log("back button clicked not exit!!!!");
-					history.back();
-				}
-			}
+        document.addEventListener("deviceready",
 
-		, false);
+            function(){
+
+                // ANDROID BACK BUTTON
+                document.addEventListener("backbutton",
+                    function(){
+                        console.log("back button clicked with this Viewport active type: ", Ext.Viewport.getActiveItem().xtype);
+                        if( Ext.Viewport.getActiveItem().xtype === 'main_panel'
+                            ||  Ext.Viewport.getActiveItem().xtype === 'login_panel' ){
+                            console.log("back button clicked being in main panel or login panel");
+                            // back on home page must quit the app
+                            navigator.app.exitApp();
+                        }else{
+                            console.log("back button clicked not exit!!!!");
+                            history.back();
+                        }
+                    }
+
+                , false);
+
+            }
+        , false);
+
+
 	},
 
 	config: {
