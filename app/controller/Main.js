@@ -91,7 +91,6 @@ Ext.define('LearningEnglish.controller.Main', {
 
     showHome: function(){
         var mainController = LearningEnglish.app.getController('Main');
-        console.log('mainController.getGamePanel()', mainController.getGamePanel());
         if(mainController.getMainPanel() != null){
             Ext.Viewport.animateActiveItem(mainController.getMainPanel(), {type:'pop'});
         } else {
@@ -114,20 +113,23 @@ Ext.define('LearningEnglish.controller.Main', {
         console.log('errorWordsList', currentGame['errorWordsList']);
         if(currentGame['errorWordsList'] != null){
             var errorWordsListJSON = new Array();
-            for(i = 0; i < currentGame['errorWordsList'].size; i++){
+            console.log('errorWordsList size: ', currentGame['errorWordsList'].length);
+            for(i = 0; i < currentGame['errorWordsList'].length; i++){
+                console.log('errorWordsList i: '+i);
                 errorWordsListJSON[i] = {
-                    id : currentGame['errorWordsList'][0].data['id'],
-                    english : currentGame['errorWordsList'][0].data['english'],
-                    spanish : currentGame['errorWordsList'][0].data['spanish'],
-                    mistakes : currentGame['errorWordsList'][0].data['mistakes'],
+                    id : currentGame['errorWordsList'][i].data['recordId']
                 }
             }
             var JSONobjet = {
-                errorList : errorWordsListJSON
+                paramList : errorWordsListJSON
             };
+
+
             console.log('JSONobjet', JSONobjet);
+            console.log('JSONobjet2', JSON.stringify(JSONobjet));
             LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/saveErrorWords', function(success){
                 console.log("Everything went well. Error words saved succesfully", success);
+                currentGame['errorWordsList'] = null;
             }, function(error){
                 console.log("ERROR!!!!!! Saving error words", error);
             }, 'POST', JSON.stringify(JSONobjet), null);
@@ -175,7 +177,7 @@ Ext.define('LearningEnglish.controller.Main', {
     },
 
     continueOldGame: function () {
-        
+
         var words_store = Ext.getStore('Word');
         var mainController = LearningEnglish.app.getController('Main');
         if(words_store != null && words_store.data.all.length > 0){
@@ -203,7 +205,7 @@ Ext.define('LearningEnglish.controller.Main', {
             console.log("spanish word");
             formValues.setValues({
                 game_answer : words_store.getAt(currentGame['wordPosition']).data['english']
-            });            
+            });
         }
 
     },
@@ -226,7 +228,7 @@ Ext.define('LearningEnglish.controller.Main', {
         var mainController = LearningEnglish.app.getController('Main');
         var words_store = Ext.getStore('Word');
 
-        currentGame['wrongCount'] = parseInt(currentGame['wrongCount']) + 1;        
+        currentGame['wrongCount'] = parseInt(currentGame['wrongCount']) + 1;
         mainController.getWrongAnswerLabel().setHtml("Wrong Answers: "+currentGame['wrongCount']);
         var actualWord = words_store.getAt(currentGame['wordPosition']);
         if(actualWord['mistakes'] === null){
@@ -235,11 +237,17 @@ Ext.define('LearningEnglish.controller.Main', {
             actualWord['mistakes'] = parseInt(actualWord['mistakes']) + 1;
         }
         if(currentGame['errorWordsList'] === null){
+            console.log('wrong answer >>>>> currentGame[\'errorWordsList\'] is empty');
             currentGame['errorWordsList'] = new Array();
-            currentGame['errorWordsList'][0] = words_store.getAt(currentGame['wordPosition']);
+            // currentGame['errorWordsList'][0] = words_store.getAt(currentGame['wordPosition']);
+            currentGame['errorWordsList'].push(words_store.getAt(currentGame['wordPosition']));
+            console.log('wrong answer >>>>> currentGame[\'errorWordsList\'][0]', currentGame['errorWordsList']);
         } else {
-            currentGame['errorWordsList'][currentGame['errorWordsList'].length] = words_store.getAt(currentGame['wordPosition']);
-        }     
+            var errorListSize = currentGame['errorWordsList'].length;
+            // currentGame['errorWordsList'][errorListSize-1] = words_store.getAt(currentGame['wordPosition']);
+            currentGame['errorWordsList'].push(words_store.getAt(currentGame['wordPosition']));
+            console.log('currentGame[\'errorWordsList\'][currentGame[\'errorWordsList\'].length]', currentGame['errorWordsList'][errorListSize-1]);
+        }
         words_store.sync();
         mainController.getWord();
     },
@@ -291,7 +299,7 @@ Ext.define('LearningEnglish.controller.Main', {
             console.log(words_store.getAt(storePosition).data['english']);
         } else {
             formValues['game_question'] = words_store.getAt(storePosition).data['spanish'];
-            currentGame['language'] = 'spanish';            
+            currentGame['language'] = 'spanish';
             formValues.setValues({
                 game_question : words_store.getAt(storePosition).data['spanish'],
                 game_answer : null
