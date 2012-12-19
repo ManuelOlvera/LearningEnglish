@@ -26,7 +26,7 @@ Ext.application({
         'Ext.Label'
     ],
 
-    views: ['Main', 'Login', 'Game'],
+    views: ['Main', 'Login', 'Game', 'NewWord'],
     controllers: ['Main'],
     stores: ['Word'],
     models: ['Word'],

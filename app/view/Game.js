@@ -6,7 +6,7 @@ Ext.define("LearningEnglish.view.Game", {
 
             title: 'Game',
             styleHtmlContent: true,
-
+            layout: 'vbox',
 
             items: [
                 {
@@ -32,6 +32,40 @@ Ext.define("LearningEnglish.view.Game", {
                     ]
                 },
                 {
+                    xtype: 'panel',
+                    styleHtmlContent: true,
+                    layout: 'hbox',
+                    defaults: {
+                        flex: 1,
+                        style: {
+                            'height': '50px'
+                        }
+                    },
+                    items: [
+                        {
+                            xtype: 'button',
+                            name: 'game_checkAnswer',
+                            ui: 'action',
+                            text: 'Check Answer',
+                            id: 'game_checkAnswer'
+                        },
+                        {
+                            xtype: 'button',
+                            name: 'game_rightAnswer',
+                            ui: 'confirm',
+                            text: 'Right Answer',
+                            id: 'game_rightAnswer'
+                        },
+                        {
+                            xtype: 'button',
+                            name: 'game_wrongAnswer',
+                            ui: 'decline',
+                            text: 'Wrong Answer',
+                            id: 'game_wrongAnswer'
+                        }
+                    ]
+                },
+                {
                     xtype: 'textareafield',
                     name: 'game_question',
                     id :  'game_question',
@@ -44,27 +78,6 @@ Ext.define("LearningEnglish.view.Game", {
                     id :  'game_answer',
                     label: 'Answer',
                     maxRows: 4
-                },
-                {
-                    xtype: 'button',
-                    name: 'game_checkAnswer',
-                    ui: 'action',
-                    text: 'Check Answer',
-                    id: 'game_checkAnswer'
-                },
-                {
-                    xtype: 'button',
-                    name: 'game_rightAnswer',
-                    ui: 'confirm',
-                    text: 'Right Answer',
-                    id: 'game_rightAnswer'
-                },
-                {
-                    xtype: 'button',
-                    name: 'game_wrongAnswer',
-                    ui: 'decline',
-                    text: 'Wrong Answer',
-                    id: 'game_wrongAnswer'
                 },
                 {
                     xtype: 'label',

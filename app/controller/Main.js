@@ -3,26 +3,20 @@ Ext.define('LearningEnglish.controller.Main', {
 
 	init : function(){
 
+        var mainController = this;
+
         document.addEventListener("deviceready",
 
             function(){
 
-                // ANDROID BACK BUTTON
-                document.addEventListener("backbutton",
-                    function(){
-                        console.log("back button clicked with this Viewport active type: ", Ext.Viewport.getActiveItem().xtype);
-                        if( Ext.Viewport.getActiveItem().xtype === 'main_panel'
-                            ||  Ext.Viewport.getActiveItem().xtype === 'login_panel' ){
-                            console.log("back button clicked being in main panel or login panel");
-                            // back on home page must quit the app
-                            navigator.app.exitApp();
-                        }else{
-                            console.log("back button clicked not exit!!!!");
-                            history.back();
-                        }
-                    }
+                // app back online - submit offline reports and get news
+                document.addEventListener("backbutton", mainController._backButton, false);
 
-                , false);
+                // app back online - submit offline reports and get news
+                document.addEventListener("online", mainController._appOnline, false);
+
+                // app goes offline
+                document.addEventListener("offline", mainController._appOffline, false);
 
             }
         , false);
@@ -37,8 +31,9 @@ Ext.define('LearningEnglish.controller.Main', {
             getLatestWordsButton : '#main_getLatestWords',
             mainPanel : 'main_panel',
             gamePanel : 'game_panel',
+            newWordPanel: 'newWord_panel',
             backMain: '#backMain_button',
-            // newGameButton: '#main_newGame',
+            insertWordButton: '#main_insertWord',
             lessPlayedButton: '#main_lessPlayed',
             mostFailedButton: '#main_mostFailed',
             randomButton: '#main_random',
@@ -47,7 +42,9 @@ Ext.define('LearningEnglish.controller.Main', {
             rightAnswerdButton:'#game_rightAnswer',
             wrongAnswerButton:'#game_wrongAnswer',
             rightAnswerLabel: '#game_rightAnswer_label',
-            wrongAnswerLabel: '#game_wrongAnswer_label'
+            wrongAnswerLabel: '#game_wrongAnswer_label',
+            backMainFromNewWordButton: '#backMainFromNewWord_button',
+            saveNewWordButton: '#saveNewWord_button'
 
 		},
 		control: {
@@ -58,9 +55,6 @@ Ext.define('LearningEnglish.controller.Main', {
 			salesforceSingInButton : {
 				tap: 'salesforceSingIn'
 			},
-            // newGameButton : {
-            //     tap: 'startNewGame'
-            // },
             lessPlayedButton : {
                 tap : function() {
                     this.startNewGame('lessPlayed');
@@ -87,6 +81,15 @@ Ext.define('LearningEnglish.controller.Main', {
             },
             continueOldGameButton : {
                 tap: 'continueOldGame'
+            },
+            insertWordButton : {
+                tap: 'insertNewWord'
+            },
+            backMainFromNewWordButton: {
+                tap: 'showHome'
+            },
+            saveNewWordButton: {
+                tap: 'postNewWordToSFDC'
             }
 		},
 
@@ -94,12 +97,24 @@ Ext.define('LearningEnglish.controller.Main', {
 		routes: {
 
 			'home'	: 'showHome',
-            'game'  : 'showGame'
+            'game'  : 'showGame',
+            'newWord' : 'showNewWord'
 
 		}
 	},
 
+    redirectNewWord: function(){
+        var mainController = LearningEnglish.app.getController('Main');
+        mainController.redirectTo('newWord');
+        var newWordForm = mainController.getNewWordPanel();
+        newWordForm.setValues({
+            newWord_english : "",
+            newWord_spanish : ""
+        });
+    },
+
     showHome: function(){
+
         var mainController = LearningEnglish.app.getController('Main');
         if(mainController.getMainPanel() != null){
             Ext.Viewport.animateActiveItem(mainController.getMainPanel(), {type:'pop'});
@@ -109,6 +124,7 @@ Ext.define('LearningEnglish.controller.Main', {
     },
 
     showGame: function(){
+
         var mainController = LearningEnglish.app.getController('Main');
         if(mainController.getGamePanel() != null){
             Ext.Viewport.animateActiveItem(mainController.getGamePanel(), {type:'pop'});
@@ -117,33 +133,22 @@ Ext.define('LearningEnglish.controller.Main', {
         }
     },
 
+    showNewWord: function(){
+
+        var mainController = LearningEnglish.app.getController('Main');
+        if(mainController.getNewWordPanel() != null){
+            Ext.Viewport.animateActiveItem(mainController.getNewWordPanel(), {type:'pop'});
+        } else {
+            Ext.Viewport.animateActiveItem(Ext.create('LearningEnglish.view.NewWord'), {type:'pop'});
+        }
+    },
+
     goBackHome: function(){
         var words_store = Ext.getStore('Word');
+        var mainController = LearningEnglish.app.getController('Main');
         words_store.sync();
         console.log('errorWordsList', currentGame['errorWordsList']);
-        if(currentGame['errorWordsList'] != null){
-            var errorWordsListJSON = new Array();
-            console.log('errorWordsList size: ', currentGame['errorWordsList'].length);
-            for(i = 0; i < currentGame['errorWordsList'].length; i++){
-                console.log('errorWordsList i: '+i);
-                errorWordsListJSON[i] = {
-                    id : currentGame['errorWordsList'][i].data['recordId']
-                }
-            }
-            var JSONobjet = {
-                paramList : errorWordsListJSON
-            };
-
-
-            console.log('JSONobjet', JSONobjet);
-            console.log('JSONobjet2', JSON.stringify(JSONobjet));
-            LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/saveErrorWords', function(success){
-                console.log("Everything went well. Error words saved succesfully", success);
-                currentGame['errorWordsList'] = null;
-            }, function(error){
-                console.log("ERROR!!!!!! Saving error words", error);
-            }, 'POST', JSON.stringify(JSONobjet), null);
-        }
+        mainController._postErrorWordsList();
         localStorage.setItem('rightCount', currentGame['rightCount']);
         localStorage.setItem('wrongCount', currentGame['wrongCount']);
         this.redirectTo('home');
@@ -151,31 +156,31 @@ Ext.define('LearningEnglish.controller.Main', {
 
 	salesforceSingIn: function() {
 
-    var mainController = this;
-    console.log("login called");
+        var mainController = this;
+        console.log("login called");
 
-    // Instantiating forcetk ClientUI
-    ftkClientUI = new forcetk.ClientUI(LearningEnglish['loginURL'], LearningEnglish['consumerKey'],
-        LearningEnglish['callbackURL'], LearningEnglish['proxy'],
-        function forceOAuthUI_successHandler(forcetkClient) { // successCallback
-            console.log('OAuth success!');
-            console.log('forcetkClient', forcetkClient);
+        // Instantiating forcetk ClientUI
+        ftkClientUI = new forcetk.ClientUI(LearningEnglish['loginURL'], LearningEnglish['consumerKey'],
+            LearningEnglish['callbackURL'], LearningEnglish['proxy'],
+            function forceOAuthUI_successHandler(forcetkClient) { // successCallback
+                console.log('OAuth success!');
+                console.log('forcetkClient', forcetkClient);
 
-            LearningEnglish['sfdcClient)'] = ftkClientUI.client;
-            console.log('LearningEnglish[\'sfdcClient)\']', LearningEnglish['sfdcClient)']);
-            // Initialize the main view
-            Ext.Viewport.add(Ext.create('LearningEnglish.view.Main'));
-            Ext.Viewport.setActiveItem(1);
+                LearningEnglish['sfdcClient)'] = ftkClientUI.client;
+                console.log('LearningEnglish[\'sfdcClient)\']', LearningEnglish['sfdcClient)']);
+                // Initialize the main view
+                Ext.Viewport.add(Ext.create('LearningEnglish.view.Main'));
+                Ext.Viewport.setActiveItem(1);
 
-        },
-        function forceOAuthUI_errorHandler(error) { // errorCallback
-            console.log('error', error);
-            alert('OAuth error!');
-        }
-    );
+            },
+            function forceOAuthUI_errorHandler(error) { // errorCallback
+                console.log('error', error);
+                alert('OAuth error!');
+            }
+        );
 
-    // Initiating login process
-    ftkClientUI.login();
+        // Initiating login process
+        ftkClientUI.login();
 
 	},
 
@@ -319,6 +324,84 @@ Ext.define('LearningEnglish.controller.Main', {
 
     },
 
+    insertNewWord: function(){
+        var mainController = LearningEnglish.app.getController('Main');
+        mainController._authenticate('redirectNewWord', function(error){
+            console.log("error going to insert new word layout", error);
+        }, null);
+        // mainController.redirectTo('newWord');
+    },
+
+    postNewWordToSFDC: function(){
+        var mainController = LearningEnglish.app.getController('Main');
+        var formValues = mainController.getNewWordPanel().getValues();
+
+        if(formValues['newWord_english'].trim() === "" || formValues['newWord_spanish'].trim() === ""){
+            alert("All fields are requiered");
+        } else {
+
+            var newWord = {
+                english: formValues['newWord_english'].trim(),
+                spanish: formValues['newWord_spanish'].trim()
+            };
+            var newWordListJSON = new Array();
+            newWordListJSON.push(newWord);
+
+            var JSONobjet = {
+                paramList : newWordListJSON
+            };
+
+
+
+            console.log('JSONobjet', JSONobjet);
+            console.log('JSON.stringify(JSONobjet)', JSON.stringify(JSONobjet));
+
+            LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/insertNewWord', function(success){
+                console.log("Everything went well. New word inserted succesfully", success);
+                var newWordForm = mainController.getNewWordPanel();
+                newWordForm.setValues({
+                    newWord_english : "",
+                    newWord_spanish : ""
+                });
+                alert("Word saved succesfully");
+            }, function(error){
+                console.log("ERROR!!!!!! Inserting new word", error);
+                alert("It wasn't possible to save the word. Try again later");
+            }, 'POST', JSON.stringify(JSONobjet), null);
+        }
+
+        console.log('formValues', formValues);
+        console.log('formValues', formValues['newWord_english']);
+    },
+
+    _postErrorWordsList: function(){
+
+        if(currentGame['errorWordsList'] != null){
+            var errorWordsListJSON = new Array();
+            console.log('errorWordsList size: ', currentGame['errorWordsList'].length);
+            for(i = 0; i < currentGame['errorWordsList'].length; i++){
+                console.log('errorWordsList i: '+i);
+                errorWordsListJSON[i] = {
+                    id : currentGame['errorWordsList'][i].data['recordId']
+                }
+            }
+            var JSONobjet = {
+                paramList : errorWordsListJSON
+            };
+
+
+            console.log('JSONobjet', JSONobjet);
+            console.log('JSONobjet2', JSON.stringify(JSONobjet));
+            LearningEnglish['sfdcClient'].apexrest('/learningEnglish/v1.0/saveErrorWords', function(success){
+                console.log("Everything went well. Error words saved succesfully", success);
+                currentGame['errorWordsList'] = null;
+            }, function(error){
+                console.log("ERROR!!!!!! Saving error words", error);
+                localStorage.setItem('errorWordsList',JSON.stringify(JSONobjet));
+            }, 'POST', JSON.stringify(JSONobjet), null);
+        }
+    },
+
     _authenticate: function(callback, errorCallback, callbackParam) {
 
         console.log('_authenticate starts');
@@ -339,13 +422,42 @@ Ext.define('LearningEnglish.controller.Main', {
                 console.log('INFO: OAuth login successful!')
                 console.log('callback', callback);
                 console.log('callbackParam', callbackParam);
-                mainController[callback].call(this, callbackParam);
+                if(callbackParam === null){
+                    mainController[callback].call();
+                } else {
+                    mainController[callback].call(this, callbackParam);
+                }
             },
             function refreshAccessToken_errorHandler(jqXHR, textStatus, errorThrown) {
                 console.log('ERROR: OAuth login!')
                 errorCallback.call();
             }
         );
+    },
+
+    _backButton: function(){
+
+        console.log("back button clicked with this Viewport active type: ", Ext.Viewport.getActiveItem().xtype);
+        if( Ext.Viewport.getActiveItem().xtype === 'main_panel'
+            ||  Ext.Viewport.getActiveItem().xtype === 'login_panel' ){
+            console.log("back button clicked being in main panel or login panel");
+            // back on home page must quit the app
+            navigator.app.exitApp();
+        }else{
+            console.log("back button clicked not exit!!!!");
+            history.back();
+        }
+    },
+
+    _appOnline: function() {
+
+        var mainController = LearningEnglish.app.getController('Main');
+        currentGame['errorWordsList'] = JSON.parse(localStorage.getItem('errorWordsList'));
+        mainController._postErrorWordsList();
+    },
+
+    _appOffline: function(){
+
     }
 
 });

@@ -18,36 +18,78 @@ Ext.define("LearningEnglish.view.Main", {
                 xtype: 'panel',
                 styleHtmlContent: true,
                 html: [
-                    '<h2>Logged in Salesforce</h2>'
+                    '<h2>Choose a game</h2>'
                 ]
             },
             {
-                xtype: 'button',
-                name: 'main_continueOldGame',
-                ui: 'action',
-                text: 'Continue Old Game',
-                id: 'main_continueOldGame'
+                xtype: 'panel',
+                styleHtmlContent: true,
+                layout: 'hbox',
+                defaults: {
+                    flex: 1,
+                    style: {
+                        'height' : '100px',
+                        'margin' : '10px'
+                    }
+                },
+                items: [
+                    {
+                        xtype: 'button',
+                        name: 'main_continueOldGame',
+                        ui: 'action',
+                        text: 'Continue Old Game',
+                        id: 'main_continueOldGame'
+                    },
+                    {
+                        xtype: 'button',
+                        name: 'main_random',
+                        ui: 'action',
+                        text: 'Random Words',
+                        id: 'main_random'
+                    },
+                    {
+                        xtype: 'button',
+                        name: 'main_mostFailed',
+                        ui: 'action',
+                        text: 'Most Failed Words',
+                        id: 'main_mostFailed'
+                    },
+                    {
+                        xtype: 'button',
+                        name: 'main_lessPlayed',
+                        ui: 'action',
+                        text: 'Less Played Words',
+                        id: 'main_lessPlayed'
+                    }
+                ]
             },
             {
-                xtype: 'button',
-                name: 'main_random',
-                ui: 'action',
-                text: 'Get Random Words',
-                id: 'main_random'
+                xtype: 'panel',
+                styleHtmlContent: true,
+                html: [
+                    '<h2>Insert a new word</h2>'
+                ]
             },
             {
-                xtype: 'button',
-                name: 'main_mostFailed',
-                ui: 'action',
-                text: 'Get Most Failed Words',
-                id: 'main_mostFailed'
-            },
-            {
-                xtype: 'button',
-                name: 'main_lessPlayed',
-                ui: 'action',
-                text: 'Get Less Played Words',
-                id: 'main_lessPlayed'
+                xtype: 'panel',
+                styleHtmlContent: true,
+                layout: 'vbox',
+                defaults: {
+                    // flex: 1,
+                    style: {
+                        'height' : '100px',
+                        'margin' : '10px'
+                    }
+                },
+                items: [
+                    {
+                        xtype: 'button',
+                        name: 'main_insertWord',
+                        ui: 'action',
+                        text: 'New word',
+                        id: 'main_insertWord'
+                    }
+                ]
             }
         ]
     }

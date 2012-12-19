@@ -11,7 +11,7 @@ Ext.define('LearningEnglish.view.Login', {
 		items: [
 			{
 				xtype: 'titlebar',
-				title: 'Login2',
+				title: 'Login',
 				docked: 'top',
 			},
 			{
@@ -23,8 +23,8 @@ Ext.define('LearningEnglish.view.Login', {
 			},
 	        {
 	            xtype: 'button',
-	            name: 'sing_in', 
-	            ui: 'action', 
+	            name: 'sing_in',
+	            ui: 'action',
 	            text: 'Sign in',
 	            id: 'login_sing_in'
 	        },
