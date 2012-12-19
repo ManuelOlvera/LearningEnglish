@@ -84,16 +84,18 @@ Ext.define('LearningEnglish.controller.Game', {
 
         var mainController = LearningEnglish.app.getController('Main');
         var wordsStore = Ext.getStore('Word');
-        var formValues = mainController.getGamePanel();
+        var gameForm = mainController.getGamePanel();
+        var userGameAnswer = gameForm.getValues()['game_answer'];
+        console.log('userGameAnswer', userGameAnswer);
         if(currentGame['language'] === 'english'){
             console.log("english word");
-            formValues.setValues({
-                game_answer : wordsStore.getAt(currentGame['wordPosition']).data['spanish']
+            gameForm.setValues({
+                game_answer : userGameAnswer + wordsStore.getAt(currentGame['wordPosition']).data['spanish']
             });
         } else {
             console.log("spanish word");
-            formValues.setValues({
-                game_answer : wordsStore.getAt(currentGame['wordPosition']).data['english']
+            gameForm.setValues({
+                game_answer : userGameAnswer + '\n\n' + wordsStore.getAt(currentGame['wordPosition']).data['english']
             });
         }
 
@@ -164,8 +166,7 @@ Ext.define('LearningEnglish.controller.Game', {
         }, function(error){
             console.log('getLatestWords Callback');
             console.log('error', error);
-        }
-        );
+        });
 
     },
 
