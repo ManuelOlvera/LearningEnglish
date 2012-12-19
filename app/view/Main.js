@@ -16,14 +16,12 @@ Ext.define("LearningEnglish.view.Main", {
             },
             {
                 xtype: 'panel',
-                styleHtmlContent: true,
                 html: [
                     '<h2>Choose a game</h2>'
                 ]
             },
             {
                 xtype: 'panel',
-                styleHtmlContent: true,
                 layout: 'hbox',
                 defaults: {
                     flex: 1,
@@ -37,7 +35,7 @@ Ext.define("LearningEnglish.view.Main", {
                         xtype: 'button',
                         name: 'main_continueOldGame',
                         ui: 'action',
-                        text: 'Continue Old Game',
+                        text: 'Old Game',
                         id: 'main_continueOldGame'
                     },
                     {
@@ -46,19 +44,32 @@ Ext.define("LearningEnglish.view.Main", {
                         ui: 'action',
                         text: 'Random Words',
                         id: 'main_random'
-                    },
+                    }
+                ]
+            },
+            {
+                xtype: 'panel',
+                layout: 'hbox',
+                defaults: {
+                    flex: 1,
+                    style: {
+                        'height' : '100px',
+                        'margin' : '10px'
+                    }
+                },
+                items: [
                     {
                         xtype: 'button',
                         name: 'main_mostFailed',
                         ui: 'action',
-                        text: 'Most Failed Words',
+                        text: 'Most Failed',
                         id: 'main_mostFailed'
                     },
                     {
                         xtype: 'button',
                         name: 'main_lessPlayed',
                         ui: 'action',
-                        text: 'Less Played Words',
+                        text: 'Less Played',
                         id: 'main_lessPlayed'
                     }
                 ]
