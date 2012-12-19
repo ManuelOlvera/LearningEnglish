@@ -11,14 +11,17 @@ Ext.define("LearningEnglish.view.Main", {
         items: [
             {
                 xtype: 'titlebar',
-                title: 'Main',
+                title: 'Learning English',
                 docked: 'top',
             },
             {
                 xtype: 'panel',
                 html: [
-                    '<h2>Choose a game</h2>'
-                ]
+                    '<h2>What do you want to do?</h2>'
+                ],
+                style: {
+                    'text-align' : 'center'
+                }
             },
             {
                 xtype: 'panel',
@@ -76,14 +79,6 @@ Ext.define("LearningEnglish.view.Main", {
             },
             {
                 xtype: 'panel',
-                styleHtmlContent: true,
-                html: [
-                    '<h2>Insert a new word</h2>'
-                ]
-            },
-            {
-                xtype: 'panel',
-                styleHtmlContent: true,
                 layout: 'vbox',
                 defaults: {
                     // flex: 1,

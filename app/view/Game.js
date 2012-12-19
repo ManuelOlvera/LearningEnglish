@@ -11,7 +11,7 @@ Ext.define("LearningEnglish.view.Game", {
             items: [
                 {
                     xtype: 'titlebar',
-                    title: 'Game',
+                    title: 'Learning English',
                     docked: 'top',
 
                     items: [
@@ -26,15 +26,8 @@ Ext.define("LearningEnglish.view.Game", {
                 },
                 {
                     xtype: 'panel',
-                    styleHtmlContent: true,
-                    html: [
-                        '<h2>Playing</h2>'
-                    ]
-                },
-                {
-                    xtype: 'panel',
-                    styleHtmlContent: true,
                     layout: 'hbox',
+                    styleHtmlContent: true,
                     defaults: {
                         flex: 1,
                         style: {
@@ -80,16 +73,22 @@ Ext.define("LearningEnglish.view.Game", {
                     maxRows: 4
                 },
                 {
-                    xtype: 'label',
-                    name: 'game_rightAnswer_label',
-                    id :  'game_rightAnswer_label',
-                    html: 'Right Answers: 0'
-                },
-                {
-                    xtype: 'label',
-                    name: 'game_wrongAnswer_label',
-                    id :  'game_wrongAnswer_label',
-                    html: 'Wrong Answers: 0'
+                    xtype: 'panel',
+                    layout: 'vbox',
+                    items: [
+                        {
+                            xtype: 'label',
+                            name: 'game_rightAnswer_label',
+                            id :  'game_rightAnswer_label',
+                            html: 'Right Answers: 0'
+                        },
+                        {
+                            xtype: 'label',
+                            name: 'game_wrongAnswer_label',
+                            id :  'game_wrongAnswer_label',
+                            html: 'Wrong Answers: 0'
+                        }
+                    ]
                 }
             ]
         }

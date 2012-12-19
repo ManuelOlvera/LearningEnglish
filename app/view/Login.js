@@ -11,22 +11,18 @@ Ext.define('LearningEnglish.view.Login', {
 		items: [
 			{
 				xtype: 'titlebar',
-				title: 'Login',
+				title: 'Learning English',
 				docked: 'top',
-			},
-			{
-	            xtype: 'panel',
-				styleHtmlContent: true,
-				html: [
-					'<h2>LOGIN TO SALESFORCE</h2>'
-				]
 			},
 	        {
 	            xtype: 'button',
 	            name: 'sing_in',
 	            ui: 'action',
 	            text: 'Sign in',
-	            id: 'login_sing_in'
+	            id: 'login_sing_in',
+                style: {
+                    'height' : '100px'
+                }
 	        },
 		]
 	}

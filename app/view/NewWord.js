@@ -11,7 +11,7 @@ Ext.define("LearningEnglish.view.NewWord", {
             items: [
                 {
                     xtype: 'titlebar',
-                    title: 'New word',
+                    title: 'Learning English',
                     docked: 'top',
 
                     items: [
@@ -33,13 +33,13 @@ Ext.define("LearningEnglish.view.NewWord", {
                 },
                 {
                     xtype: 'panel',
-                    styleHtmlContent: true,
                     html: [
                         '<h2>Insert new word</h2>'
                     ]
                 },
                 {
                     xtype: 'textareafield',
+                    styleHtmlContent: true,
                     name: 'newWord_english',
                     id :  'newWord_english',
                     label: 'English',
@@ -47,6 +47,7 @@ Ext.define("LearningEnglish.view.NewWord", {
                 },
                 {
                     xtype: 'textareafield',
+                    styleHtmlContent: true,
                     name: 'newWord_spanish',
                     id :  'newWord_spanish',
                     label: 'Spanish',
